@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Dashboard | ReLoop</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+        .dashboard {
+            padding: 55px 8%;
+            min-height: 75vh;
+        }
+
+        .welcome-card {
+            background: linear-gradient(120deg, #FADDE7, #F8E5F0, #FCEAF1);
+            padding: 38px;
+            border-radius: 20px;
+            margin-bottom: 35px;
+            box-shadow: 0 8px 25px rgba(201, 79, 138, 0.08);
+        }
+
+        .welcome-card h1 {
+            font-family: Poppins, sans-serif;
+            margin: 10px 0;
+        }
+
+        .welcome-card p {
+            color: #66545E;
+        }
+
+        .dashboard-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-heading h2 {
+            font-family: Poppins, sans-serif;
+        }
+
+        .dashboard-actions,
+        .dashboard-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-nav {
+            margin-bottom: 40px;
+        }
+
+        .dashboard-link {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #C94F8A;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .dashboard-link:hover {
+            background: #a83c70;
+            transform: translateY(-2px);
+        }
+
+        .smart-link {
+            background: linear-gradient(120deg, #EFA9C5, #C94F8A);
+        }
+
+        .smart-link:hover {
+            background: #a83c70;
+        }
+
+        .logout-button {
+            border: 1px solid #C94F8A;
+            background: white;
+            color: #C94F8A;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .dashboard-empty {
+            background: #F8E5F0;
+            text-align: center;
+            padding: 50px 20px;
+            border-radius: 15px;
+        }
+
+        .dashboard-empty h3 {
+            font-family: Poppins, sans-serif;
+            margin: 10px;
+        }
+
+        .dashboard-feature {
+            background: linear-gradient(120deg, #FFF0F5, #FADDE7);
+            border: 1px solid #F3C5D8;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-feature h2 {
+            margin-top: 0;
+            font-family: Poppins, sans-serif;
+        }
+
+        .dashboard-feature p {
+            color: #66545E;
+        }
+
+        @media(max-width:600px) {
+            .dashboard {
+                padding: 35px 5%;
+            }
+
+            .welcome-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo">⟳ ReLoop<span>.</span></a>
+
+    <div class="nav-actions">
+        <a href="/">Home</a>
+
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-button">Logout</button>
+        </form>
+    </div>
+</header>
+
+<main class="dashboard">
+
+    <!-- WELCOME SECTION -->
+    <section class="welcome-card">
+        <span class="eyebrow">YOUR PERSONAL SPACE ♡</span>
+
+        <h1>Hello, {{ request.user.username }}!</h1>
+
+        <p>
+            Welcome to your ReLoop dashboard.
+            Here's your marketplace activity.
+        </p>
+    </section>
+
+    <!-- DASHBOARD NAVIGATION -->
+    <div class="dashboard-nav">
+
+        <a href="{% url 'sell_product' %}" class="dashboard-link">
+            + Sell a Product
+        </a>
+
+        <a href="{% url 'my_wishlist' %}" class="dashboard-link">
+            ♡ My Wishlist
+        </a>
+
+        <a href="{% url 'my_orders' %}" class="dashboard-link">
+            🛍️ My Orders
+        </a>
+
+        <a href="/" class="dashboard-link">
+            Explore Products →
+        </a>
+
+        <a href="{% url 'smart_swap' %}" class="dashboard-link smart-link">
+            ✨ Discover SmartSwap
+        </a>
+
+    </div>
+
+    <!-- SMART SWAP FEATURE -->
+    <section class="dashboard-feature">
+
+        <h2>✨ Meet SmartSwap</h2>
+
+        <p>
+            Find potential product exchange matches using
+            category, price, condition and product keywords.
+        </p>
+
+        <a href="{% url 'smart_swap' %}" class="dashboard-link">
+            Find Swap Matches →
+        </a>
+
+    </section>
+
+    <!-- MY LISTINGS -->
+    <div class="dashboard-heading">
+        <h2>My Listings</h2>
+    </div>
+
+    <div class="product-grid">
+
+        {% for product in my_products %}
+
+        <a href="{% url 'product_detail' product.id %}"
+           class="product-card">
+
+            <div class="product-image">
+
+                {% if product.image %}
+                    <img src="{{ product.image.url }}"
+                         alt="{{ product.title }}">
+                {% else %}
+                    <div class="image-placeholder">♡</div>
+                {% endif %}
+
+            </div>
+
+            <div class="product-info">
+
+                <span class="product-category">
+                    {{ product.get_category_display }}
+                </span>
+
+                <h3>{{ product.title }}</h3>
+
+                <p>{{ product.get_condition_display }}</p>
+
+                <div class="product-bottom">
+                    <strong>₹{{ product.price }}</strong>
+                    <span>{{ product.get_listing_type_display }}</span>
+                </div>
+
+            </div>
+
+        </a>
+
+        {% empty %}
+
+        <div class="dashboard-empty" style="grid-column:1/-1;">
+
+            <h3>No listings yet ♡</h3>
+
+            <p>
+                Your products will appear here when you start
+                selling or swapping.
+            </p>
+
+            <a href="{% url 'sell_product' %}" class="dashboard-link">
+                List Your First Product
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</main>
+
+</body>
+</html>

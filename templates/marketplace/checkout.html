@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Secure Checkout | ReLoop</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #FFF8FB;
+            color: #29232B;
+        }
+
+        .navbar {
+            background: linear-gradient(120deg, #FADDE7, #F8E5F0);
+            padding: 20px 7%;
+            color: #C94F8A;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .checkout {
+            max-width: 520px;
+            margin: 55px auto;
+            padding: 35px;
+            background: white;
+            border-radius: 22px;
+            box-shadow: 0 8px 30px rgba(201,79,138,0.12);
+            border: 1px solid #F8E5F0;
+        }
+
+        h2 {
+            color: #C94F8A;
+            margin-top: 0;
+        }
+
+        .subtitle {
+            color: #756B73;
+            font-size: 14px;
+        }
+
+        .order-details {
+            background: #FFF4F8;
+            padding: 18px;
+            border-radius: 13px;
+            margin-top: 25px;
+            line-height: 2;
+            overflow-wrap: anywhere;
+        }
+
+        .amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: #C94F8A;
+            margin-top: 5px;
+        }
+
+        .secure-note {
+            font-size: 12px;
+            color: #756B73;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 25px;
+            background: #C94F8A;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .pay-button:hover {
+            background: #A93670;
+        }
+
+        .pay-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .back {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #C94F8A;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        @media(max-width:600px) {
+            .checkout {
+                margin: 30px 5%;
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">♡ ReLoop.</div>
+
+<main class="checkout">
+
+    <h2>Secure Checkout 💗</h2>
+
+    <p class="subtitle">
+        You're one step closer to giving this product a new home.
+    </p>
+
+    <div class="order-details">
+
+        <p><strong>Product:</strong> {{ product.title }}</p>
+
+        <p><strong>Seller:</strong> {{ product.owner.username }}</p>
+
+        <p><strong>Order ID:</strong> #{{ order.id }}</p>
+
+        <hr>
+
+        <p><strong>Total Amount</strong></p>
+
+        <div class="amount">₹{{ product.price }}</div>
+
+    </div>
+
+    <button id="pay-button" class="pay-button" type="button">
+        Pay Now 💗
+    </button>
+
+    <p class="secure-note">
+        Payments are processed through Razorpay.
+        ReLoop does not store card details.
+    </p>
+
+    <a href="{% url 'product_detail' product.id %}" class="back">
+        ← Back to Product
+    </a>
+
+</main>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+    const payButton = document.getElementById("pay-button");
+
+    const options = {
+        key: "{{ razorpay_key|escapejs }}",
+        amount: "{{ amount }}",
+        currency: "INR",
+        name: "ReLoop",
+        description: "{{ product.title|escapejs }}",
+        order_id: "{{ razorpay_order_id|escapejs }}",
+
+        handler: function (response) {
+            payButton.disabled = true;
+            payButton.textContent = "Verifying Payment...";
+
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "{% url 'payment_success' %}";
+
+            const csrf = document.createElement("input");
+            csrf.type = "hidden";
+            csrf.name = "csrfmiddlewaretoken";
+            csrf.value = "{{ csrf_token }}";
+            form.appendChild(csrf);
+
+            for (const key in response) {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = response[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        },
+
+        theme: {
+            color: "#C94F8A"
+        },
+
+        modal: {
+            ondismiss: function () {
+                payButton.disabled = false;
+                payButton.textContent = "Pay Now 💗";
+            }
+        }
+    };
+
+    payButton.addEventListener("click", function () {
+
+        if (typeof Razorpay === "undefined") {
+            alert("Payment service could not load. Check your internet connection.");
+            return;
+        }
+
+        payButton.disabled = true;
+        payButton.textContent = "Opening Payment...";
+
+        try {
+            const payment = new Razorpay(options);
+
+            payment.on("payment.failed", function (response) {
+                payButton.disabled = false;
+                payButton.textContent = "Pay Now 💗";
+
+                alert(
+                    response.error.description ||
+                    "Payment failed. Please try again."
+                );
+            });
+
+            payment.open();
+
+        } catch (error) {
+            payButton.disabled = false;
+            payButton.textContent = "Pay Now 💗";
+
+            alert("Unable to open payment. Please try again.");
+        }
+    });
+</script>
+
+</body>
+</html>

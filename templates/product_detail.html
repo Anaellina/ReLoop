@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.title }} | ReLoop</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+        .wishlist-btn {
+            display: inline-block;
+            margin: 15px 0;
+            padding: 12px 24px;
+            background: #C94F8A;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .wishlist-btn:hover {
+            background: #a83c70;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo">⟳ ReLoop</a>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/dashboard/">Dashboard</a>
+    </nav>
+</header>
+
+<main class="container" style="max-width:900px; margin:50px auto; padding:25px;">
+
+    <div style="background:white; padding:25px; border-radius:18px;">
+
+        {% if product.image %}
+            <img src="{{ product.image.url }}"
+                 alt="{{ product.title }}"
+                 style="width:100%; max-height:400px; object-fit:contain; border-radius:15px;">
+        {% endif %}
+
+        <h1>{{ product.title }}</h1>
+
+        <h2 style="color:#C94F8A;">
+            ₹{{ product.price }}
+        </h2>
+
+        <p>{{ product.description }}</p>
+
+        <p><strong>Category:</strong> {{ product.get_category_display }}</p>
+        <p><strong>Condition:</strong> {{ product.get_condition_display }}</p>
+        <p><strong>Listing:</strong> {{ product.get_listing_type_display }}</p>
+        <p><strong>Location:</strong> {{ product.location }}</p>
+
+        {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'add_to_wishlist' product.id %}">
+                {% csrf_token %}
+                <button type="submit" class="wishlist-btn">
+                    ♡ Add to Wishlist
+                </button>
+            </form>
+        {% else %}
+            <a href="/login/" class="wishlist-btn">
+                Login to Wishlist ♡
+            </a>
+        {% endif %}
+
+        <br>
+
+        <a href="/" class="button">Back to Marketplace</a>
+
+    </div>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReLoop | Buy · Sell · Swap</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo">⟳ ReLoop<span>.</span></a>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="#explore">Explore</a>
+        <a href="#how">How it works</a>
+        <a href="{% url 'smart_swap' %}">SmartSwap ✨</a>
+        <a href="/admin/">Admin</a>
+    </nav>
+
+    <div class="nav-actions">
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}" class="login-btn">Dashboard</a>
+            <a href="{% url 'logout' %}" class="login-btn">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="login-btn">Login</a>
+            <a href="{% url 'register' %}" class="login-btn">Sign up</a>
+        {% endif %}
+        <a href="/sell/" class="sell-btn">+ Sell an item</a>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <span class="eyebrow">A SMARTER WAY TO SHOP ♡</span>
+
+        <h1>
+            Your next favourite
+            <span>thing is already</span>
+            out there.
+        </h1>
+
+        <p>
+            Discover pre-loved treasures, sell what you no longer need,
+            and swap things you love. Give every product a second life.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="#explore" class="primary-btn">Explore products →</a>
+            <a href="/sell/" class="secondary-btn">Start selling</a>
+        </div>
+
+        <div class="hero-note">
+            ♡ Buy less. Share more. Make it meaningful.
+        </div>
+    </div>
+
+    <div class="hero-art">
+        <div class="art-circle"></div>
+        <div class="art-card card-one">♡<br><strong>Pre-loved</strong><br>Perfectly loved.</div>
+        <div class="art-card card-two">⟳<br><strong>Re-imagine</strong><br>Reuse beautifully.</div>
+        <div class="art-card card-three">✦<br><strong>Discover</strong><br>Something special.</div>
+        <div class="art-center">
+            ReLoop<br>
+            <small>BUY · SELL · SWAP</small>
+        </div>
+    </div>
+</section>
+
+<section class="categories">
+    <div><span>01</span><h3>Fashion</h3></div>
+    <div><span>02</span><h3>Electronics</h3></div>
+    <div><span>03</span><h3>Books</h3></div>
+    <div><span>04</span><h3>Beauty</h3></div>
+    <div><span>05</span><h3>Home & Living</h3></div>
+</section>
+
+<section class="products-section" id="explore">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">FIND YOUR NEXT FAVOURITE</span>
+            <h2>Explore the loop<span>.</span></h2>
+            <p>Good finds deserve another chance.</p>
+        </div>
+    </div>
+
+    <div class="product-grid">
+        {% for product in products %}
+        <a href="{% url 'product_detail' product.id %}" class="product-card">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                {% else %}
+                    <div class="image-placeholder">♡</div>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <span class="product-category">{{ product.get_category_display }}</span>
+                <h3>{{ product.title }}</h3>
+                <p>{{ product.get_condition_display }} · {{ product.location }}</p>
+
+                <div class="product-bottom">
+                    <strong>₹{{ product.price }}</strong>
+                    <span>{{ product.get_listing_type_display }}</span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="empty-products">
+            <span>♡</span>
+            <h3>Your next great find starts here.</h3>
+            <p>Products will appear here as sellers add their listings.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="smart-section" id="how">
+    <div class="smart-content">
+        <span class="eyebrow">A LITTLE SMARTER, A LOT MORE PERSONAL</span>
+
+        <h2>Meet <span>SmartSwap.</span></h2>
+
+        <p>
+            Not sure what to exchange? ReLoop's SmartSwap matching
+            system helps discover potential product exchanges based
+            on category, condition and estimated value.
+        </p>
+
+        <span class="smart-label">
+            SMART MATCHING · MEANINGFUL EXCHANGES
+        </span>
+
+        <br><br>
+
+        <a href="{% url 'smart_swap' %}" class="primary-btn">
+            Discover SmartSwap ✨
+        </a>
+    </div>
+
+    <div class="smart-symbol">
+        ⟳
+        <small>SMART<br>SWAP</small>
+    </div>
+</section>
+
+<footer>
+    <a href="/" class="logo">⟳ ReLoop<span>.</span></a>
+    <p>Give your products a second life. ♡</p>
+    <p class="copyright">© 2026 ReLoop. Buy · Sell · Swap.</p>
+</footer>
+
+</body>
+</html>

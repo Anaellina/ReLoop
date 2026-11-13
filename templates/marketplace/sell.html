@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell a Product | ReLoop</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <a href="/" class="logo">ReLoop</a>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/dashboard/">Dashboard</a>
+    </nav>
+</header>
+
+<main class="container" style="max-width:750px; margin:50px auto; padding:25px;">
+    <h1>List a Product 💗</h1>
+    <p>Give your pre-loved products a second life.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div style="margin:20px 0;">
+                <label style="display:block; margin-bottom:8px;">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% for error in field.errors %}
+                    <p style="color:red;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit">Publish Listing</button>
+    </form>
+</main>
+
+</body>
+</html>

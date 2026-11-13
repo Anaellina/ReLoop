@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartSwap | ReLoop</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #fff8fb;
+            color: #29232b;
+        }
+
+        nav {
+            padding: 18px 7%;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f5dce8;
+        }
+
+        .logo {
+            color: #c94f8a;
+            font-size: 23px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        nav a.back {
+            color: #c94f8a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .intro {
+            background: linear-gradient(120deg, #FADDE7, #F8E5F0);
+            padding: 35px;
+            border-radius: 20px;
+            margin-bottom: 35px;
+        }
+
+        .intro h1 {
+            color: #c94f8a;
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        .intro p {
+            color: #66545e;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px #eacbd833;
+            border: 1px solid #f8e5ef;
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .match {
+            color: #c94f8a;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .match-label {
+            background: #fceaf2;
+            color: #a83c70;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .progress {
+            height: 9px;
+            background: #f7e5ed;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #efa9c5, #c94f8a);
+            border-radius: 20px;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .product {
+            background: #fff4f8;
+            padding: 18px;
+            border-radius: 14px;
+            min-width: 0;
+        }
+
+        .product img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .image-placeholder {
+            height: 190px;
+            background: #f8e5f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            color: #c94f8a;
+            font-size: 40px;
+        }
+
+        .product h3 {
+            color: #c94f8a;
+            font-size: 16px;
+        }
+
+        .product h4 {
+            margin-bottom: 5px;
+        }
+
+        .product p {
+            margin: 5px 0;
+            color: #66545e;
+        }
+
+        .view-product {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 9px 15px;
+            background: #c94f8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .view-product:hover {
+            background: #a83c70;
+        }
+
+        .reason {
+            color: #756b73;
+            line-height: 2;
+            padding-left: 22px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px 25px;
+        }
+
+        .empty h2 {
+            color: #c94f8a;
+        }
+
+        .empty p {
+            color: #756b73;
+        }
+
+        .empty a {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 22px;
+            background: #c94f8a;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+
+        @media(max-width:650px) {
+            .products {
+                grid-template-columns: 1fr;
+            }
+
+            .intro h1 {
+                font-size: 23px;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            nav {
+                padding: 15px 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <a href="/" class="logo">♡ ReLoop.</a>
+    <a href="{% url 'dashboard' %}" class="back">
+        ← Dashboard
+    </a>
+</nav>
+
+<main class="container">
+
+    <section class="intro">
+        <h1>SmartSwap Matching ✨</h1>
+        <p>
+            Discover products that could be a great exchange
+            for yours through our compatibility matching system.
+        </p>
+    </section>
+
+    {% if matches %}
+
+        {% for match in matches %}
+
+            <section class="card">
+
+                <div class="match-header">
+                    <div class="match">
+                        {{ match.score }}% Compatibility
+                    </div>
+
+                    <span class="match-label">
+                        Potential Swap Match ♡
+                    </span>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-fill"
+                         style="width: {{ match.score }}%;">
+                    </div>
+                </div>
+
+                <div class="products">
+
+                    <div class="product">
+
+                        <h3>Your Product</h3>
+
+                        {% if match.offer.image %}
+                            <img src="{{ match.offer.image.url }}"
+                                 alt="{{ match.offer.title }}">
+                        {% else %}
+                            <div class="image-placeholder">♡</div>
+                        {% endif %}
+
+                        <h4>{{ match.offer.title }}</h4>
+
+                        <p>₹{{ match.offer.price }}</p>
+
+                        <p>
+                            {{ match.offer.get_condition_display }}
+                        </p>
+
+                        <a href="{% url 'product_detail' match.offer.id %}"
+                           class="view-product">
+                            View Your Listing
+                        </a>
+
+                    </div>
+
+                    <div class="product">
+
+                        <h3>Matching Product</h3>
+
+                        {% if match.requested.image %}
+                            <img src="{{ match.requested.image.url }}"
+                                 alt="{{ match.requested.title }}">
+                        {% else %}
+                            <div class="image-placeholder">♡</div>
+                        {% endif %}
+
+                        <h4>{{ match.requested.title }}</h4>
+
+                        <p>₹{{ match.requested.price }}</p>
+
+                        <p>
+                            {{ match.requested.get_condition_display }}
+                        </p>
+
+                        <a href="{% url 'product_detail' match.requested.id %}"
+                           class="view-product">
+                            View Matching Product
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <h4>Why this match? 💗</h4>
+
+                <ul class="reason">
+                    {% for reason in match.reasons %}
+                        <li>{{ reason }}</li>
+                    {% empty %}
+                        <li>General product compatibility.</li>
+                    {% endfor %}
+                </ul>
+
+            </section>
+
+        {% endfor %}
+
+    {% else %}
+
+        <section class="card empty">
+
+            <h2>No matches yet ♡</h2>
+
+            <p>
+                Add an available product with listing type
+                Swap or Sell or Swap to discover potential exchange matches.
+            </p>
+
+            <a href="{% url 'sell_product' %}">
+                + List a Product 💗
+            </a>
+
+        </section>
+
+    {% endif %}
+
+</main>
+
+</body>
+</html>

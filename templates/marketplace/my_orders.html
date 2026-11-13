@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | ReLoop</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #FFF8FB;
+            color: #29232B;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px #00000008;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #C94F8A;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #C94F8A;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            color: #C94F8A;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 35px;
+        }
+
+        .section {
+            margin-bottom: 45px;
+        }
+
+        .section h2 {
+            color: #C94F8A;
+            border-bottom: 2px solid #FADDE7;
+            padding-bottom: 12px;
+        }
+
+        .order-card {
+            background: white;
+            padding: 20px;
+            margin: 18px 0;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px #C94F8A12;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .order-card img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: #FADDE7;
+        }
+
+        .details {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .details h3 {
+            margin-top: 0;
+        }
+
+        .price {
+            color: #C94F8A;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .status {
+            display: inline-block;
+            background: #FCE4EF;
+            color: #B83E79;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 15px;
+            color: #888;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 15px;
+            color: #C94F8A;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media(max-width: 600px) {
+            .order-card {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">ReLoop ♡</div>
+    <a href="{% url 'home' %}">Back to Home</a>
+</nav>
+
+<div class="container">
+
+    <h1>My Orders ♡</h1>
+    <p class="subtitle">Keep track of your purchases and sales on ReLoop.</p>
+
+    <div class="section">
+        <h2>My Purchases 🛍️</h2>
+
+        {% for order in orders %}
+        <div class="order-card">
+
+            {% if order.product.image %}
+                <img src="{{ order.product.image.url }}" alt="{{ order.product.title }}">
+            {% endif %}
+
+            <div class="details">
+                <h3>{{ order.product.title }}</h3>
+                <p class="price">₹{{ order.amount }}</p>
+                <p>Seller: {{ order.seller.username }}</p>
+                <p>Order date: {{ order.created_at|date:"d M Y" }}</p>
+                <span class="status">{{ order.status|title }}</span>
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="empty">
+            <h3>No purchases yet ♡</h3>
+            <p>Your purchased products will appear here.</p>
+            <a class="back" href="{% url 'home' %}">Explore ReLoop →</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="section">
+        <h2>My Sales 💗</h2>
+
+        {% for order in sales %}
+        <div class="order-card">
+
+            {% if order.product.image %}
+                <img src="{{ order.product.image.url }}" alt="{{ order.product.title }}">
+            {% endif %}
+
+            <div class="details">
+                <h3>{{ order.product.title }}</h3>
+                <p class="price">₹{{ order.amount }}</p>
+                <p>Buyer: {{ order.buyer.username }}</p>
+                <p>Order date: {{ order.created_at|date:"d M Y" }}</p>
+                <span class="status">{{ order.status|title }}</span>
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="empty">
+            <h3>No sales yet ♡</h3>
+            <p>Your sold products will appear here.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>

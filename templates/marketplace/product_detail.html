@@ -1,0 +1,251 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.title }} | ReLoop</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #FFF8FB;
+            color: #29232B;
+        }
+
+        nav {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(201,79,138,.08);
+        }
+
+        .logo {
+            color: #C94F8A;
+            font-size: 25px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        nav a {
+            color: #6C5261;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 55px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 45px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 35px rgba(201,79,138,.08);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 430px;
+            object-fit: cover;
+            border-radius: 18px;
+            background: #FCEAF1;
+        }
+
+        .details {
+            padding: 20px 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #FCE5EF;
+            color: #C94F8A;
+            padding: 7px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 29px;
+            margin: 18px 0 10px;
+        }
+
+        .price {
+            color: #C94F8A;
+            font-size: 29px;
+            font-weight: 800;
+            margin: 15px 0;
+        }
+
+        .description {
+            color: #756873;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .info {
+            margin-top: 24px;
+            border-top: 1px solid #F3E5EC;
+        }
+
+        .info p {
+            padding: 10px 0;
+            border-bottom: 1px solid #F3E5EC;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 13px 20px;
+            text-decoration: none;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .buy {
+            background: #C94F8A;
+            color: white;
+            flex: 1;
+        }
+
+        .wishlist {
+            background: #FCE5EF;
+            color: #C94F8A;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            color: #C94F8A;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .messages {
+            max-width: 1050px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+            color: #C94F8A;
+        }
+
+        @media(max-width: 700px) {
+            .container {
+                grid-template-columns: 1fr;
+                margin: 20px;
+                gap: 10px;
+            }
+
+            .product-image {
+                height: 300px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <a href="{% url 'home' %}" class="logo">ReLoop ♡</a>
+    <a href="{% url 'dashboard' %}">My Dashboard</a>
+</nav>
+
+<div class="messages">
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+</div>
+
+<div class="container">
+
+    <div>
+        {% if product.image %}
+            <img src="{{ product.image.url }}" class="product-image" alt="{{ product.title }}">
+        {% else %}
+            <div class="product-image" style="display:flex;align-items:center;justify-content:center;font-size:65px;">
+                ♡
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="details">
+
+        <span class="tag">{{ product.get_category_display }}</span>
+
+        <h1>{{ product.title }}</h1>
+
+        <div class="price">₹{{ product.price }}</div>
+
+        <p class="description">{{ product.description }}</p>
+
+        <div class="info">
+            <p><strong>Condition:</strong> {{ product.get_condition_display }}</p>
+            <p><strong>Listing:</strong> {{ product.get_listing_type_display }}</p>
+            <p><strong>Location:</strong> {{ product.location }}</p>
+            <p><strong>Seller:</strong> {{ product.owner.username }}</p>
+        </div>
+
+        <div class="buttons">
+
+            {% if user.is_authenticated %}
+                {% if product.owner != user %}
+
+                    {% if product.listing_type == 'sell' or product.listing_type == 'both' %}
+                        <a href="{% url 'checkout' product.id %}" class="btn buy">
+                            Buy Now →
+                        </a>
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'add_to_wishlist' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn wishlist">
+                            ♡ Wishlist
+                        </button>
+                    </form>
+
+                {% else %}
+                    <span class="tag">Your Listing</span>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="btn buy">
+                    Login to Buy
+                </a>
+            {% endif %}
+
+        </div>
+
+        <a href="{% url 'home' %}" class="back">← Back to ReLoop</a>
+
+    </div>
+</div>
+
+</body>
+</html>
