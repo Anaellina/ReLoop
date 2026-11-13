@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-m#wz=h_@p2z@*h4f^grm0&(o$^1(rhr60g%f=nxh%sibdx-i2(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['reloop-marketplace-nbih.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
